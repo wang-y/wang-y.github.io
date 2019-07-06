@@ -1,0 +1,249 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>垃圾回收 | 咩技术的技术Blog</title>
+<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1562427239888">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://wang-y.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://wang-y.github.io">
+  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1562427239888" alt="">
+  </a>
+  <h1 class="site-title">
+    咩技术的技术Blog
+  </h1>
+  <p class="site-description">
+    不仅不知新，并且还经常忘旧o( ╯□╰ )o
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/wang-y" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              垃圾回收
+            </h2>
+            <div class="post-info">
+              <time class="post-time">
+                · 2019-07-06 ·
+              </time>
+              
+                <a href="https://wang-y.github.io/tag/177tfGqOs" class="post-tag">
+                  # JVM
+                </a>
+              
+            </div>
+            
+            <div class="post-content">
+              <p>如果Java虚拟机创建的对象无论是否被使用都不会得到释放从而占满了所有的内存空间，那么在创建新的对象时，将会产生OutOfMemoryException。</p>
+<!-- more -->
+<p>所以Java虚拟机有一套自动内存管理机制，叫做垃圾回收机制。</p>
+<p>对象的是否需要进行回收，需要进行判断，判断的方式有两种：</p>
+<p><strong>引用计数法</strong></p>
+<p>当对象每被引用一次时，其引用计数器加一；当其中一个引用失效时，其引用计数器减一，当对象的引用计数器值为零时，标记此对象可以被清除。</p>
+<p>优点：</p>
+<ul>
+<li>判定效率高</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>当两个对象循环引用时，计数器便无法标记为0，于是导致两个对象不会被回收。</li>
+</ul>
+<p><strong>可达性分析</strong></p>
+<p>从一个根节点向下搜索，搜索的路径被称作引用链，当一个对象到根节点没有任何引用链相连时，则证明此对象是不可达的，标记次对象可以被清除。</p>
+<p>优点：</p>
+<ul>
+<li>更加精确和严谨，可以分析出循环数据结构相互引用的情况</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>实现比较复杂</li>
+<li>需要分析大量数据，消耗大量时间</li>
+<li>分析过程需要GC停顿（引用关系不能发生变化），即停顿所有Java执行线程（称为&quot;Stop The World&quot;，是垃圾回收重点关注的问题）</li>
+</ul>
+<p>可达性分析法中的根叫做GC Roots。</p>
+<p>在Java中，能够当作GC Roots的有：</p>
+<ul>
+<li>VM Stack中Stack Frame的局部地变量表引用的对象</li>
+<li>方法区/元空间中的静态属性引用的对象</li>
+<li>方法区/元空间中常量引用的对象</li>
+<li>本地方法栈中JNI（Native方法）引用的对象</li>
+</ul>
+<p>目前所有的Java虚拟机中都采用可达性分析法来判断对象是否需要被清除。</p>
+<h1 id="垃圾回收算法">垃圾回收算法</h1>
+<h2 id="标记-清除算法">标记-清除算法</h2>
+<p>首先遍历GC Roots标记出存活对象，然后再次遍历所有对象，将没有被标记为存活的对象清除。</p>
+<p>缺点：效率低，且容易产生内存碎片，如果新的对象无法找到合适的连续空间进行存储，将会触发GC。</p>
+<h2 id="复制算法">复制算法</h2>
+<p>将内存区等分为两个区域，在任意时间点，所有动态分配的对象都只能分配在其中一个区间（称为活动区间），而另外一个区间（称为空闲区间）则是空闲的。当活动区间被占满时，将活动区间内的存活对象，全部复制到空闲区间，且严格按照内存地址依次排列，与此同时，GC线程将更新存活对象的内存引用地址指向新的内存地址。在空间转换的同时垃圾对象被一次性清除。</p>
+<p>优点：无内存碎片；</p>
+<p>缺点：可用内存减少一半，降低性能。</p>
+<h2 id="标记-整理算法">标记-整理算法</h2>
+<p>首先遍历GC Roots标记出存活对象，然后再次遍历所有对象，移动存活对象按照内存地址依次排列，最后，将末端内存地址以后的内存全部回收。</p>
+<p>优点：</p>
+<ul>
+<li>产生较少的内存碎片</li>
+<li>消除了复制算法中内存减半额高额待见</li>
+</ul>
+<p>缺点：效率低</p>
+<h1 id="垃圾收集器">垃圾收集器</h1>
+<h2 id="serial-gc">Serial GC</h2>
+<p>单线程串行垃圾收集器，新生代使用复制算法，老年代使用标记-整理算法。</p>
+<p>Stop The Word时间长。</p>
+<h2 id="parnew-gc">ParNew GC</h2>
+<p>多线程串行垃圾收集器，Serial GC的多线程版本，新生代使用复制算法，老年代使用标记-整理算法。</p>
+<p>Stop The Word时间相对Serial GC较短，但在单线程环境中不一定表现比Serial GC更好。</p>
+<h2 id="parallel-scavenge-gc">Parallel Scavenge GC</h2>
+<p>并行清除垃圾收集器，是一个新生代收集器，采用复制算法，其关注点并非尽可能的降低STW时间，而是旨在达到一个可以控制的吞吐量。</p>
+<p>吞吐量指的是CPU用于运行用户代码的时间与CPU总消耗时间的比值，即 吞吐量=运行用户代码时间/(运行用户代码时间+垃圾收集时间)。</p>
+<h2 id="serial-old-gc">Serial Old GC</h2>
+<p>单线程老年代串行垃圾收集器，Serial GC的老年代版本，是一个老年代收集器，老年代采用标记-整理算法。</p>
+<h2 id="parallel-old-gc">Parallel Old GC</h2>
+<p>并行清除老年代垃圾收集器，Parallel Scavenge GC的老年代版本，是一个老年代收集器，使用多线程和标记-整理算法。</p>
+<h2 id="concurrent-mark-sweep-gc">Concurrent Mark Sweep GC</h2>
+<p>并发标记清除垃圾收集器，是使用标记-清除算法的老年代收集器。</p>
+<p>工作时主要分为四个步骤：</p>
+<ol>
+<li>初始标记(单线程，STW)</li>
+<li>并发标记(同用户线程一起工作)</li>
+<li>重新标记(并行，STW)</li>
+<li>并发清除(同用户线程一起工作)</li>
+</ol>
+<p>问题：</p>
+<ul>
+<li>CPU资源敏感</li>
+<li>无法处理浮动垃圾</li>
+<li>易产生内存碎片</li>
+</ul>
+<h2 id="garbage-first-gc">Garbage First GC</h2>
+<p>简称G1垃圾收集器，非实时收集器。</p>
+<p>特点：</p>
+<ul>
+<li>并行并发</li>
+<li>分代收集</li>
+<li>空间整合</li>
+<li>可预测的停顿</li>
+</ul>
+<p>工作时分为四个步骤：</p>
+<ol>
+<li>初始标记(单线程，STW)</li>
+<li>并发标记(同用户线程一起工作)</li>
+<li>最终标记(并行)</li>
+<li>筛选回收(并行)</li>
+</ol>
+<p>在G1垃圾收集器中，采用了全新的内存布局，将Heap分成了一块块大小相等的Heap Region，一般在2000多块，Region在逻辑上时连续的，每个Region都会被打上唯一分代标记(eden,survivor,old)。在逻辑上，eden regions构成Eden空间，survivor regions构成Survivor空间，old regions构成了old 空间。</p>
+<p>在并发标记时，G1会确定堆中对象的存活情况，标记完成后，G1知道哪些regions空闲空间多(可回收对象多)，优先回收这些空的regions，释放出大量的空闲空间。</p>
+
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://wang-y.github.io/post/jvmneicunmoxing">
+              <h3 class="post-title">
+                JVM内存模型
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '1356e8abd2bb94963284',
+    clientSecret: '53c8b52fd6403011622ddc41bd7f33c136df2f78',
+    repo: 'wang-y.github.io',
+    owner: 'wang-y',
+    admin: ['wang-y'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://wang-y.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
