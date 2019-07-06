@@ -1,0 +1,189 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JVM内存模型 | 咩技术的技术Blog</title>
+<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1562387909413">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://wang-y.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://wang-y.github.io">
+  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1562387909413" alt="">
+  </a>
+  <h1 class="site-title">
+    咩技术的技术Blog
+  </h1>
+  <p class="site-description">
+    不仅不知新，并且还经常忘旧o( ╯□╰ )o
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              JVM内存模型
+            </h2>
+            <div class="post-info">
+              <time class="post-time">
+                · 2019-07-06 ·
+              </time>
+              
+                <a href="https://wang-y.github.io/tag/177tfGqOs" class="post-tag">
+                  # JVM
+                </a>
+              
+            </div>
+            
+            <div class="post-content">
+              <p>Java RunTime Data Area(Java 运行时数据区) 分为:</p>
+<ul>
+<li>Java Heap(Java堆)</li>
+<li>Method Area(方法区) (Java 8 之前)</li>
+<li>Meta Space(元空间) (Java 8 之后)</li>
+<li>VM Stack(虚拟机栈)</li>
+<li>Native Methiod Stack(本地方法栈)</li>
+<li>Program Counter Register(程序计数器)。</li>
+</ul>
+<!-- more --> 
+<p><img src="https://wang-y.github.io/post-images/1562387893493.png" alt=""></p>
+<h1 id="java-heap">Java Heap</h1>
+<p>Java创建的所有引用对象类型都存储在Heap中，所以此区域是所有线程共享的。</p>
+<p>Heap中有分为:</p>
+<ul>
+<li>Old Gen(老年代)</li>
+<li>Young Gen(新生代)</li>
+<li>Eden Space(伊甸区)</li>
+<li>Survivor Space(幸存者区)
+<ul>
+<li>From</li>
+<li>To</li>
+</ul>
+</li>
+</ul>
+<p>因所有引用对象类型都存储在Heap区中，如果对象始终存在而不被清除，那么Heap内存将会被占满，导致内存溢出，所以Heap是垃圾收集的重点区域。</p>
+<h1 id="method-areaperm-gen">Method Area/Perm Gen</h1>
+<p>Java中被加载的类信息、常量、静态变量、即时编译器编译后的代码都存储在此区域中，所有此区域是所有线程共享的。</p>
+<p>类信息包括：</p>
+<ul>
+<li>完整有效名称（全名=包名.类名）</li>
+<li>直接父类的有效名称（java.lang.Object除外)</li>
+<li>类的修饰符</li>
+<li>接口的有序列表</li>
+<li>域(field)信息</li>
+<li>方法(method)信息</li>
+</ul>
+<p>常量及静态变量：</p>
+<ul>
+<li>static final 修饰的常量</li>
+<li>static 修饰的变量</li>
+</ul>
+<p><strong>说明</strong></p>
+<ul>
+<li>对于八种基本数据类型的静态变量会直接在方法区中开辟空间，并将其对应的值存储在方法区中</li>
+<li>对于引用类型的静态变量如果未用new关键字为引用类型的静态变量分配对象（如: static Object obj;）那么对象的引用obj会存储在方法区中，并为其指定默认值null;</li>
+<li>对于引用类型的静态变量如果用new关键字为引用类型的静态变量分配对象（如: static Person person = new Person();）,那么对象的引用person 会存储在方法区中，并且该对象在堆中的地址也会存储在方法区中（注意此时静态变量只存储了对象的堆地址，而对象本身仍在堆内存中）</li>
+</ul>
+<p>Method Area也经常被称作Non-heap(非堆)，但是在Hotspot中，其定义了Perm Gen(持久代)(仅在Hotspot中有持久代这个概念)，以此替代Method Area，也就是说在Hotspot中在物理上Method Area存在于Heap中的Perm Gen中，但是从逻辑上来讲，Method Area与Heap的概念还是互相独立的。</p>
+<p>在Java7之前，字符串常量池和运行时常量池都存放在Method Area中。
+到Java7时，字符串常量池被移到了Heap中。</p>
+<p>Method Area也需要进行垃圾收集。</p>
+<h1 id="meta-space">Meta Space</h1>
+<p>Java8之后，移除了Method Area的概念，引入了新的Meta Space概念，这使得在原先从物理上占用Heap内存的Perm Gen的空间得到了释放，新的Meta Space将直接使用本地内存，使得类元数据只受到可用的本地内存限制(容量取决于是32位或是64位操作系统的可用虚拟内存大小)</p>
+<p>在Java8之后，运行常量池被移到了Meta Space中，字符串常量池依然存放于堆中。</p>
+<p>Meta Space也需要进行垃圾收集。</p>
+<h1 id="vm-stack">VM Stack</h1>
+<p>当方法被执行时，会同时创建一个Stack Frame(栈帧)。</p>
+<p>Stack Frame内会记录:</p>
+<ul>
+<li>局部变量表</li>
+<li>操作数栈</li>
+<li>动态链接</li>
+<li>方法出口</li>
+</ul>
+<p>每一个方法的执行，就代表这一个Stack Frame从入栈到出栈的过程，VM Stack被执行这个方法的线程单独持有，是私有的。</p>
+<p>VM Stack的大小可以是固定的，也可以是动态调整的，如果大小被固定，一旦线程需要一个比较固定大小更大的VM Stack，将会发生 StackOverflowException；如果是动态调整的大小，一旦在动态拓展时没有足够的内存或者系统没有系统没有足够的内存为新线程创建Stack，将会发生OutOfMemoryExcption；</p>
+<h1 id="native-methiod-stack">Native Methiod Stack</h1>
+<p>本地方法栈和Java虚拟机栈实现的功能类似，只不过本地方法区是本地方法运行的内存模型。</p>
+<p>本地方法被执行的时候，在本地方法栈也会创建一个栈帧，用于存放该本地方法的局部变量表、操作数栈、动态链接、方法出口。</p>
+<p>方法执行完毕后相应的栈帧也会出栈并释放内存空间。</p>
+<p>也会抛出StackOverFlowError和OutOfMemoryError异常。</p>
+<h1 id="program-counter-register">Program Counter Register</h1>
+<p>由于Java虚拟机的多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器（对于多核处理器来说是一个内核）只会执行一条线程中的指令。因此，为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器，各条线程之间的计数器互不影响，独立存储，我们称这类内存区域为“线程私有”的内存。</p>
+<p>Program Counter Register 正是这个用于记录当前线程正在执行的字节码的行号指示器。</p>
+<p>此区域是Java规范中唯一没有规定任何OutOfMemoryExcption的区域。</p>
+<p>如果正在执行的是Natvie方法，这个计数器值则为空（Undefined）。</p>
+
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://wang-y.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
