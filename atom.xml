@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://wang-y.github.io</id>
     <title>咩技术的技术Blog</title>
-    <updated>2019-07-06T15:36:43.913Z</updated>
+    <updated>2019-07-07T13:30:34.283Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://wang-y.github.io"/>
     <link rel="self" href="https://wang-y.github.io/atom.xml"/>
@@ -116,6 +116,14 @@
 </ol>
 <p>在G1垃圾收集器中，采用了全新的内存布局，将Heap分成了一块块大小相等的Heap Region，一般在2000多块，Region在逻辑上时连续的，每个Region都会被打上唯一分代标记(eden,survivor,old)。在逻辑上，eden regions构成Eden空间，survivor regions构成Survivor空间，old regions构成了old 空间。</p>
 <p>在并发标记时，G1会确定堆中对象的存活情况，标记完成后，G1知道哪些regions空闲空间多(可回收对象多)，优先回收这些空的regions，释放出大量的空闲空间。</p>
+<h1 id="内存分配策略">内存分配策略</h1>
+<ul>
+<li>对象优先在 Young Gen 的 Eden Space 分配</li>
+<li>大对象直接进入 Old Gen</li>
+<li>长期存活对象进入 Old Gen (对象在Eden区出生且经过第一次GC后，仍然存活，将其放入Survivor的活动区域中，年龄记为1，再次GC后，存活的对象从活动区域转换到原先的空闲区域，并且年龄加一，如此反复，直至对象年龄达到指定年龄，进入Old Gen)</li>
+<li>动态对象年龄判定(当Survivor中相同年龄所有对象的大小已经达到了或者超过了Survivor的一半，那么年龄大于等于该年龄的对象可以直接进入Old Gen)</li>
+<li>空间分配担保</li>
+</ul>
 ]]></content>
     </entry>
     <entry>
