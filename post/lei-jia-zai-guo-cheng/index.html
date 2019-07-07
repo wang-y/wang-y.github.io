@@ -1,0 +1,210 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>类加载过程 | 咩技术的技术Blog</title>
+<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1562511854229">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://wang-y.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://wang-y.github.io">
+  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1562511854229" alt="">
+  </a>
+  <h1 class="site-title">
+    咩技术的技术Blog
+  </h1>
+  <p class="site-description">
+    不仅不知新，并且还经常忘旧o( ╯□╰ )o
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/wang-y" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              类加载过程
+            </h2>
+            <div class="post-info">
+              <time class="post-time">
+                · 2019-07-07 ·
+              </time>
+              
+            </div>
+            
+            <div class="post-content">
+              <p>在编写代码时，编辑的文件名后缀为.java，我们需要将其编译成.class为后缀的文件，之后加载到虚拟机中才能被运行和使用。</p>
+<p>那么类是如何被加载的呢？</p>
+<!-- more -->
+<p>类的加载过程一共分为7个阶段，如下图：</p>
+<p><img src="https://wang-y.github.io/post-images/1562507092196.png" alt=""></p>
+<h1 id="加载">加载</h1>
+<p>首先，虚拟机需要通过类的全限定名才能获取到定义此类的二进制字节流。
+然后，将这个字节流所代表的静态存储结构转换为方法区的运行时数据结构。
+最后，在内存中生成一个代表该类的java.lang.Class对象，作为这个类在方法区的各种数据的访问入口。</p>
+<p>虚拟机规范其实相对比较宽泛，并没有强制规范“二进制字节流一定要从.class文件中读取”，所以，也可使用很多其他的方式，诸如 压缩包内读取、网络上获取、其他文件生成、数据库中读取、运行时计算生成等。</p>
+<h1 id="验证">验证</h1>
+<p>验证的目的主要是为了校验.class文件中获取的二进制字节流中包含的信息是否满足当前虚拟机的要求，并且不会对当前虚拟机产生安全方面的危害。</p>
+<p>主要包含4个方面的验证：</p>
+<ol>
+<li>文件格式验证(是否以魔数0xCAFEBABY开头、主次版本号是否在当前虚拟机处理范围内等)</li>
+<li>元数据验证(是否有父类、父类是否继承了final修饰的类、如果非抽象类是否实现了其父类或者接口中所有要求的方法、是否重写了父类中final修饰的方法等)</li>
+<li>字节码验证(通过数据流和控制流分析，判定程序语义是否是合法的、符合逻辑的；对方法体进行校验分析，却表被校验的类的方法在运行时不会做出危害虚拟机的安全事件。)</li>
+<li>符号引用验证(符号引用中能否通过字符串描述的全限定名寻找到对应类；在指定的类中是否存在符合方法的字段描述以及简单名称所描述的方法和字段；符号引用中的类、字段、方法的访问性是否允许被当前类访问；)</li>
+</ol>
+<h1 id="准备">准备</h1>
+<p>在这一阶段中，将正式为类变量分配内存，并设置其初始值。</p>
+<p><strong>注意</strong></p>
+<p>所谓的类变量，仅指被“static”修饰的变量，而不包括实例变量。</p>
+<h1 id="解析">解析</h1>
+<p>在这一阶段中，虚拟机将常量池内的符号引用将转化为直接引用。</p>
+<p>主要针对7类符号引用：</p>
+<ol>
+<li>类及接口</li>
+<li>字段</li>
+<li>类方法</li>
+<li>接口方法</li>
+<li>方法类型</li>
+<li>方法句柄</li>
+<li>调用点限定符</li>
+</ol>
+<h1 id="初始化">初始化</h1>
+<p>Java虚拟机规范中强制定义了有且仅有5中情况必须立即对类进行初始化：</p>
+<ol>
+<li>遇到了new、getstatic、putstatic、invokestatic4条字节码指令时</li>
+<li>使用java.lang.reflect包的方法对类进行反射调用时</li>
+<li>初始化一个类时，其父类尚未被初始化，需要先触发其父类的初始化</li>
+<li>虚拟机启动时，用户需要指定一个要执行的主类时(即main()方法的所在类)，虚拟机会先初始化这个类。</li>
+<li>使用JDK 1.7的动态语言支持时</li>
+</ol>
+<p>到了这一步，才真正开始执行类中定义的Java程序代码。
+通俗来说就是执行类构造器&lt;clinit&gt;()方法的过程。</p>
+<h1 id="双亲委派模型">双亲委派模型</h1>
+<p>对于Java虚拟机的角度来讲，只存在两种不同的类加载器:</p>
+<ul>
+<li>Bootstrap ClassLoader(启动类加载器)，由C++实现，是虚拟机自身的一部分</li>
+<li>所有其他的类加载器，都是有Java语言实现，独立于虚拟机外部，并且都继承自抽象类java.lang.ClassLoader</li>
+</ul>
+<p>但是对于Java程序员来说，可以更细致一些：</p>
+<ul>
+<li>Bootstrap ClassLoader(启动类加载器) ：主要负责将存放于 JAVA_HOME/lib 目录下的，并且能够按文件名被虚拟机识别的类库加载到虚拟机中。</li>
+<li>Extension ClassLoader(拓展类加载器) ：主要负责将存放于 JAVA_HOME/lib/ext 目录下的类库加载到虚拟机中。</li>
+<li>Application ClassLoader(应用类加载器) ：主要负责将存放在用户路径(ClassPath)下的类库加载到虚拟机中。</li>
+</ul>
+<p>此三者类加载器互相配合进行加载，具有层级关系</p>
+<p><img src="https://wang-y.github.io/post-images/1562511382768.png" alt=""></p>
+<p>最后，程序员们可以在应用类加载器之下自定义类加载器。</p>
+<p>双亲委派模型工作过程：
+类加载器收到了类加载委托请求，它首先不会去尝试自己加载该类，而是委派给父类加载器去加载，如果父类加载器在其搜索范围内没有找到所需的类而无法完成这个加载请求时，子类加载器才会尝试由自己去加载。</p>
+
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://wang-y.github.io/post/lajihuishou">
+              <h3 class="post-title">
+                垃圾回收
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '1356e8abd2bb94963284',
+    clientSecret: '53c8b52fd6403011622ddc41bd7f33c136df2f78',
+    repo: 'wang-y.github.io',
+    owner: 'wang-y',
+    admin: ['wang-y'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | 
+  <a class="rss" href="https://wang-y.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
