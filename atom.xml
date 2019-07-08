@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://wang-y.github.io</id>
     <title>咩技术的技术Blog</title>
-    <updated>2019-07-08T13:36:20.329Z</updated>
+    <updated>2019-07-08T13:37:29.977Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://wang-y.github.io"/>
     <link rel="self" href="https://wang-y.github.io/atom.xml"/>
@@ -17,11 +17,10 @@
         </link>
         <updated>2019-07-08T07:07:06.000Z</updated>
         <summary type="html"><![CDATA[<p>先来看看Java的集合类导图。</p>
-<p><img src="https://wang-y.github.io/post-images/1562571036544.png" alt=""></p>
 ]]></summary>
         <content type="html"><![CDATA[<p>先来看看Java的集合类导图。</p>
-<p><img src="https://wang-y.github.io/post-images/1562571036544.png" alt=""></p>
 <!-- more -->
+<p><img src="https://wang-y.github.io/post-images/1562571036544.png" alt=""></p>
 <p>首先来看Collection的末节点的类</p>
 <h1 id="linkedlist">LinkedList</h1>
 <p>LinkedList 是维护一组节点的列表，节点包括节点本身、下一个节点及上一个节点。</p>
