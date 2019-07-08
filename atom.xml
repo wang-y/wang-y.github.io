@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://wang-y.github.io</id>
     <title>咩技术的技术Blog</title>
-    <updated>2019-07-08T14:02:19.115Z</updated>
+    <updated>2019-07-08T14:58:38.194Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://wang-y.github.io"/>
     <link rel="self" href="https://wang-y.github.io/atom.xml"/>
@@ -65,6 +65,7 @@
 <p>一般不使用Vector。</p>
 <p><strong>先转过头看完Map再来理解Set</strong></p>
 <h1 id="hashmap">HashMap</h1>
+<p>以下内容根据Java8编辑。</p>
 <p>Map 是维护一组键值对关系的集合。
 HashMap 中使用数组+链表+红黑树的数据结构。
 HashMap在插入数据时的步骤:</p>
@@ -101,12 +102,56 @@ HashMap在插入数据时的步骤:</p>
 </ol>
 </li>
 </ol>
+<p>扩容机制：
+当HashMap中的键值对数量达到 阈值=容量*加载因子 时，开始扩容。</p>
+<ol>
+<li>扩容时 ，先生成一个当前容量的两倍大小的数组。</li>
+<li>遍历原数组、链表及红黑树中的节点，迁移到新数组。
+<ol>
+<li>如果原节点e的(e.hash &amp; oldTable.length  == 0)，则e在新数组的索引位置同旧数组的索引位置相同。</li>
+<li>如果如果原节点e的(e.hash &amp; oldTable.length  != 1)，则e在新数组的索引位置等于旧数组的索引位置+旧数组的长度。</li>
+<li>根据链表长度是否超过8判断是否将链表转换为红黑树。</li>
+</ol>
+</li>
+<li>将数组的引用指向新数组。</li>
+<li>修改 阈值=新容量*加载因子</li>
+<li>扩容完成</li>
+</ol>
+<p>在jdk1.7中，在扩容的迁移节点步骤在多线程环境下会产生死循环。
+而在jdk1.8中，多线程引起的死循环则产生在链表到红黑树相互转换时。</p>
+<p>除了死循环的问题，在多线程环境下，HashMap可能会丢失数据。</p>
+<p>其他1.7与1.8中的不同之处，到时候另开篇来讲。</p>
 <h1 id="hashtable">HashTable</h1>
+<p>HashTable 也是维护一组键值对关系的集合。
+与HashMap不一样的是：</p>
+<ul>
+<li>是线程安全的，很多方法有synchronized修饰，单线程环境下因为加锁导致效率低。</li>
+<li>key/value都不允许为空，而HashMap允许一组key为空，多个value为空。</li>
+<li>Hashtable的hash算法散射不均匀，容易产生hash冲突。</li>
+<li>Hashtable的扩容将先创建一个长度为原长度2倍的数组，再使用头插法将链表进行反序。</li>
+<li>HashTable的数据结构为数组+链表。</li>
+</ul>
 <h1 id="linkedhashmap">LinkedHashMap</h1>
+<p>LinkedHashMap 继承自 HashMap，在 HashMap 基础上，通过维护一条双向链表，解决了 HashMap 不能随时保持遍历顺序和插入顺序一致的问题。</p>
+<p>在实现上，LinkedHashMap 很多方法直接继承自 HashMap，仅为维护双向链表覆写了部分方法。</p>
+<p>可根据 插入顺序排序，也可以根据访问顺序排序。</p>
+<p>更详细的内容可以参照博文[https://segmentfault.com/a/1190000012964859](LinkedHashMap 源码详细分析（JDK1.8）) 作者：coolblog</p>
 <h1 id="treemap">TreeMap</h1>
+<p>TreeMap 继承自SortedMap，是有序的键值对集合。</p>
+<p>TreeMap 的数据结构是红黑树，根据自然排序。</p>
+<p>在使用TreeMap时，有两点要求：</p>
+<ol>
+<li>要么对象需实现Comparable接口。</li>
+<li>要么在构造TreeMap时传入Comparator实现。</li>
+</ol>
+<p><strong>先回过头来理解Set</strong></p>
 <h1 id="hashset">HashSet</h1>
+<p>Set是维护一组数据不重复的集合。</p>
+<p>HashSet 是基于 HashMap 实现的，底层采用 HashMap 来保存元素，HashMap中的Key值即为HashSet中的值，而HashMap中的value则为空对象(private static final Object PRESENT = new Object();)。</p>
 <h1 id="linkedhashset">LinkedHashSet</h1>
+<p>原理同HashSet，基于LinkedHashSet实现。</p>
 <h1 id="treeset">TreeSet</h1>
+<p>原理同HashSet，基于TreeMap实现。</p>
 ]]></content>
     </entry>
     <entry>
