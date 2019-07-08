@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://wang-y.github.io</id>
     <title>咩技术的技术Blog</title>
-    <updated>2019-07-07T15:23:00.455Z</updated>
+    <updated>2019-07-08T13:23:45.372Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://wang-y.github.io"/>
     <link rel="self" href="https://wang-y.github.io/atom.xml"/>
@@ -10,6 +10,414 @@
     <logo>https://wang-y.github.io/images/avatar.png</logo>
     <icon>https://wang-y.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, 咩技术的技术Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[Java中的集合]]></title>
+        <id>https://wang-y.github.io/post/java-zhong-de-ji-he</id>
+        <link href="https://wang-y.github.io/post/java-zhong-de-ji-he">
+        </link>
+        <updated>2019-07-08T07:07:06.000Z</updated>
+        <summary type="html"><![CDATA[<p>先来看看Java的集合类导图。</p>
+<p><img src="https://wang-y.github.io/post-images/1562571036544.png" alt=""></p>
+]]></summary>
+        <content type="html"><![CDATA[<p>先来看看Java的集合类导图。</p>
+<p><img src="https://wang-y.github.io/post-images/1562571036544.png" alt=""></p>
+<!-- more -->
+<p>首先来看Collection的末节点的类</p>
+<h1 id="linkedlist">LinkedList</h1>
+<p>LinkedList 是维护一组节点的列表，节点包括节点本身、下一个节点及上一个节点。</p>
+<p>在JDK1.6时，LinkedList只有一个头结点(header)，列表中的第一个元素的上一个节点永远指向header节点，而列表中的最后一个节点的下一个节点也永远指向header，这就构成了一个以header为开头和结尾的循环链表。</p>
+<p>在JDK1.7之后，LinkedList维护一个头结点(first)和一个尾节点(last)，列表中的第一个元素的上一个节点永远为null，而最后一个节点的下一个节点永远为null，构成了一个非循环链表。</p>
+<p>1.7对比1.6的优化：</p>
+<ul>
+<li>first / last有更清晰的链头、链尾概念，代码看起来更容易明白。</li>
+<li>first / last方式能节省new一个headerEntry。</li>
+</ul>
+<blockquote>
+<p>实例化headerEntry是为了让后面的方法更加统一，否则会多很多header的空校验</p>
+</blockquote>
+<ul>
+<li>在链头/尾进行插入/删除操作，first /last方式更加快捷。</li>
+</ul>
+<blockquote>
+<p>插入/删除操作按照位置，分为两种情况：中间 和 两头。
+在中间插入/删除，两者都是一样，先遍历找到index，然后修改链表index处两头的指针。
+在两头，对于循环链表来说，由于首尾相连，还是需要处理两头的指针。而非循环链表只需要处理一边first.previous/last.next，所以理论上非循环链表更高效。恰恰在两头(链头/链尾) 操作是最普遍的</p>
+</blockquote>
+<p>LinkedList在进行插入/移除操作时，只需要改变指针的指向（把链表断开，插入/删除元素，再把链表连起来）即可，使Linked的写入操作性能非常高。</p>
+<p>但是LinkedList在随机访问的时候效率就会很低，因为它需要遍历节点才可以找到元素。</p>
+<p>适用场景：</p>
+<ul>
+<li>写入/移除操作频繁</li>
+<li>随机访问少</li>
+<li>不需要考虑线程安全</li>
+</ul>
+<h1 id="arraylist">ArrayList</h1>
+<p>ArrayList 底层基于数组实现，在初始化时需要指定初始容量，默认容量为10，当数组容量已满时，需要进行扩容，ArrayList扩容时，按照当前容量的1.5倍生成一个新的数组，后将原数组拷贝到新数组中，最后将数组对象指针指向新数组。</p>
+<p>ArrayList是一个动态数组，实现了RandomAccess接口，支持随机访问，通过get(i)即可获得相应内存中存放的值。原因是因为ArrayList存放的内容在内存中是连续的，数组直接用[ ]访问，相当于直接操作内存地址，所以随机访问的效率较高。</p>
+<p>但是ArrayList内部空间总是有限的，每当内部容量被占满，就需要进行扩容，因此在插入/移除操作时，会带来性能上的损耗。</p>
+<p>使用场景：</p>
+<ul>
+<li>写入/移除操作少</li>
+<li>读多</li>
+<li>不需要考虑线程安全</li>
+</ul>
+<h1 id="vector">Vector</h1>
+<p>Vector 是ArrayList线程安全版本，Vector在所有方法上都加了synchronized关键字，同一时刻，只有一个线程可以进入同一个Vector对象，保证了线程的安全性，但是降低了性能。</p>
+<p>一般不使用Vector。</p>
+<p><strong>先转过头看完Map再来理解Set</strong></p>
+<h1 id="hashmap">HashMap</h1>
+<p>Map 是维护一组键值对关系的集合。
+HashMap 中使用数组+链表+红黑树的数据结构。
+HashMap在插入数据时的步骤:</p>
+<ol>
+<li>通过获取key.hashCode()</li>
+<li>做一次扰动运算  (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16))，目的是为了减少Hash碰撞</li>
+<li>检查数组是否已经初始化</li>
+<li>如果数据未初始化则先初始化数组</li>
+<li>初始化数组之后，使用扰动后的hash值与当前HashMap的数组容量减一的值做一次与运算(hash&amp; table.length-1),计算插入的键值对在数组中的索引位置。</li>
+<li>判断当前索引位置是否为空
+<ol>
+<li>如果当前位置为空，则将此键值对直接放入数组</li>
+<li>如果当前位置不为空，则继续比对此位置的旧数据中key与新key是否相等
+<ol>
+<li>如果相等，则替换，并返回旧值</li>
+<li>如果不相等，则先判断此处节点是红黑树节点还是链表节点
+<ol>
+<li>如果是红黑树节点，则插入红黑树</li>
+<li>如果是链表，遍历链表将新节点插入尾端
+<ol>
+<li>计算链表长度，如果链表长度大于8则转换为红黑树节点</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>判断数组长度是否达到 容量*加载因子 的值
+<ol>
+<li>如果是则扩容</li>
+<li>如果不是则返回结果</li>
+</ol>
+</li>
+</ol>
+<h1 id="hashtable">HashTable</h1>
+<h1 id="linkedhashmap">LinkedHashMap</h1>
+<h1 id="treemap">TreeMap</h1>
+<h1 id="hashset">HashSet</h1>
+<h1 id="linkedhashset">LinkedHashSet</h1>
+<h1 id="treeset">TreeSet</h1>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Java浅拷贝与深拷贝]]></title>
+        <id>https://wang-y.github.io/post/java-qian-kao-bei-yu-shen-kao-bei</id>
+        <link href="https://wang-y.github.io/post/java-qian-kao-bei-yu-shen-kao-bei">
+        </link>
+        <updated>2019-07-08T06:00:20.000Z</updated>
+        <summary type="html"><![CDATA[<p>Java中的对象拷贝(Object Copy)指的是将一个对象的所有属性（成员变量）拷贝到另一个有着相同类类型的对象中去。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>Java中的对象拷贝(Object Copy)指的是将一个对象的所有属性（成员变量）拷贝到另一个有着相同类类型的对象中去。</p>
+<!-- more -->
+<p>举一个例子就是：</p>
+<pre><code class="language-java">class Person {
+  private String name;
+  private int age;
+  private Address addr;
+	
+  //setter,getter
+}
+class Address{
+  private String country;
+  private String city;
+  private String street;
+	
+  //setter,getter
+}
+
+main(String[] args){
+  Person a=new Persion();
+  a.setName(&quot;Tomy&quot;);
+  a.setAge(16);
+  Address a_addr=new Address();
+  a_addr.setCountry(&quot;中国&quot;);
+  a_addr.setCity(&quot;成都&quot;);
+  a_addr.setStreet(&quot;天府大道&quot;);
+  a.setAddr(a_addr);
+	
+  //clone
+  Person b=new Persion();
+  b.setName(a.getName())
+  b.setAge(a.getAge());
+  b.setAddr(a.getAddr());
+}
+</code></pre>
+<h1 id="浅拷贝">浅拷贝</h1>
+<ul>
+<li>对于数据类型是基本数据类型的成员变量，浅拷贝会直接进行值传递，也就是将该属性值复制一份给新的对象。因为是两份不同的数据，所以对其中一个对象的该成员变量值进行修改，不会影响另一个对象拷贝得到的数据。</li>
+<li>对于数据类型是引用数据类型的成员变量，比如说成员变量是某个数组、某个类的对象等，那么浅拷贝会进行引用传递，也就是只是将该成员变量的引用值（内存地址）复制一份给新的对象。因为实际上两个对象的该成员变量都指向同一个实例。在这种情况下，在一个对象中修改该成员变量会影响到另一个对象的该成员变量值。</li>
+</ul>
+<p>继续以上面的例子举例：</p>
+<pre><code class="language-java">main(String[] args){
+  Person a=new Persion();
+  a.setName(&quot;Tomy&quot;);
+  a.setAge(16);
+  Address a_addr=new Address();
+  a_addr.setCountry(&quot;中国&quot;);
+  a_addr.setCity(&quot;成都&quot;);
+  a_addr.setStreet(&quot;天府大道&quot;);
+  a.setAddr(a_addr);
+	
+  //clone
+  Person b=new Persion();
+  b.setName(a.getName());
+  b.setAge(a.getAge());
+  b.setAddr(a.getAddr());
+	
+  a.setName(&quot;Jerry&quot;);
+  a.setAge(12);
+  a_addr.setCountry(&quot;中国&quot;);
+  a_addr.setCity(&quot;北京&quot;);
+  a_addr.setStreet(&quot;东长安街&quot;);
+	
+	System.out.println(b.getName());
+	System.out.println(b.getAge());
+	System.out.println(b.getAddr().getCity());
+	System.out.println(b.getAddr().getStreet());
+}
+</code></pre>
+<p>应输出：</p>
+<pre><code>Tomy
+16
+北京
+东长安街
+</code></pre>
+<p>实现浅拷贝的方式有两种：</p>
+<ul>
+<li>通过构造器实现</li>
+</ul>
+<pre><code class="language-java">class Person {
+  // ...field
+	public Person(Person person){
+	  this.name=person.name;
+		this.age=person.age;
+		this.addr=person.addr;
+	}
+}
+...
+b=new Person(a);
+</code></pre>
+<ul>
+<li>通过实现Cloneable接口,调用Object.clone()方法：</li>
+</ul>
+<pre><code class="language-java">class Person  implements Cloneable {
+  // ...field
+	
+	@Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
+}
+...
+b=(Person)a.clone();
+</code></pre>
+<h1 id="深拷贝">深拷贝</h1>
+<p>对于深拷贝来说，不仅要复制对象的所有基本数据类型的成员变量值，还要为所有引用数据类型的成员变量申请存储空间，并复制每个引用数据类型成员变量所引用的对象，直到该对象可达的所有对象。</p>
+<p>换句话说，即便是修改原对象中的引用数据类型成员变量，也不会影响拷贝后生成的新对象中的引用数据类型成员变量。</p>
+<p>继续以上面的例子举例：</p>
+<pre><code class="language-java">  Person a=new Persion();
+  a.setName(&quot;Tomy&quot;);
+  a.setAge(16);
+  Address a_addr=new Address();
+  a_addr.setCountry(&quot;中国&quot;);
+  a_addr.setCity(&quot;成都&quot;);
+  a_addr.setStreet(&quot;天府大道&quot;);
+  a.setAddr(a_addr);
+  
+  //clone
+  Person b=clone(a);
+  
+  a.setName(&quot;Jerry&quot;);
+  a.setAge(12);
+  a_addr.setCountry(&quot;中国&quot;);
+  a_addr.setCity(&quot;北京&quot;);
+  a_addr.setStreet(&quot;东长安街&quot;);
+  
+  System.out.println(b.getName());
+  System.out.println(b.getAge());
+  System.out.println(b.getAddr().getCity());
+  System.out.println(b.getAddr().getStreet());
+</code></pre>
+<p>应输出：</p>
+<pre><code>Tomy
+16
+成都
+天府大道
+</code></pre>
+<p>实现深拷贝的方式：</p>
+<ul>
+<li>在通过重写Object.clone()方法,并实现Cloneable接口，同时为对象所有引用数据类型的成员变量都实现Cloneable接口并重写clone方法，最后在最顶层的类的重写的clone方法中调用所有的clone方法即可实现深拷贝。简单的说就是：每一个引用数据类型的成员变量都进行浅拷贝=深拷贝。</li>
+</ul>
+<pre><code class="language-java">class Person  implements Cloneable {
+  // ...field
+	
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    Person obj=(Person) super.clone();
+    obj.addr=(Address) obj.addr.clone();
+    return obj ;
+  }
+}
+class Address  implements Cloneable {
+  // ...field
+	
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
+}
+...
+b=(Person)a.clone();
+</code></pre>
+<ul>
+<li>使用序列化实现</li>
+</ul>
+<pre><code class="language-java">class Person  implements Cloneable {
+  // ...field
+}
+class Address  implements Cloneable {
+  // ...field
+}
+public final static &lt;T&gt; T clone(T t) {
+  try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+    oos.writeObject(t);
+		oos.flush();
+    try (ByteArrayInputStream bais = new ByteArrayInputStream(bos.toByteArray());ObjectInputStream ois = new ObjectInputStream(bais)){
+      T nt = (T) ois.readObject();
+      return nt;
+    }
+  } catch (IOException |ClassNotFoundException e) {
+    e.printStackTrace();
+  }
+  return null;
+}
+...
+b=clone(a);
+</code></pre>
+<ul>
+<li>使用JSON转换实现</li>
+</ul>
+<pre><code class="language-java">String json=toJSON(a);
+b=JSON.toObject(json);
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[GitHub 仓库批量删除]]></title>
+        <id>https://wang-y.github.io/post/github-cang-ku-pi-liang-shan-chu</id>
+        <link href="https://wang-y.github.io/post/github-cang-ku-pi-liang-shan-chu">
+        </link>
+        <updated>2019-07-08T02:07:52.000Z</updated>
+        <summary type="html"><![CDATA[<p>Github 仓库不支持批量删除，需要一个一个手动删除，如果项目少还好，但是项目多了，删起来就很麻烦，这个工具就是使用Selenium框架，自动化删除GitHub仓库。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>Github 仓库不支持批量删除，需要一个一个手动删除，如果项目少还好，但是项目多了，删起来就很麻烦，这个工具就是使用Selenium框架，自动化删除GitHub仓库。</p>
+<!-- more -->
+<p>项目地址：<a href="">https://github.com/wang-y/github-batch-delete</a></p>
+<h1 id="使用方法">使用方法</h1>
+<ol>
+<li>使用 git clone https://github.com/wang-y/github-batch-delete.git 下载项目</li>
+<li>将项目导入 IDE</li>
+<li>根据电脑的系统及chrome版本，在 http://chromedriver.storage.googleapis.com/index.html 中寻找对应的Driver</li>
+<li>下载后将解压出来的chromedriver文件放入resources/driver目录下</li>
+<li>对应系统分别修改名称：Windows: chromedriver.exe,  MacOS: chromedriver_mac,  Linux: chromedriver_linux</li>
+<li>修改application.yml的配置</li>
+</ol>
+<pre><code>github:
+  username: username # 用户名
+  password: password # 密码
+  repositorys: repo1,repo2,repo3 # 仓库名称，使用','分割
+#Windows系统请维护chrome安装路径
+chrome:
+  win:
+    bin: C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+</code></pre>
+<ol start="7">
+<li>执行Application.java中的 main() 方法即可。</li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Spring Boot 项目生成工具]]></title>
+        <id>https://wang-y.github.io/post/spring-boot-xiang-mu-sheng-cheng-gong-ju</id>
+        <link href="https://wang-y.github.io/post/spring-boot-xiang-mu-sheng-cheng-gong-ju">
+        </link>
+        <updated>2019-07-08T01:12:13.000Z</updated>
+        <summary type="html"><![CDATA[<p>这是一个用于快速生成Spring Boot项目的工具，快速构建中小型API、RESTful API项目，稳定、简单、快速，使我们摆脱那些重复劳动，专注于业务代码的编写，减少加班。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>这是一个用于快速生成Spring Boot项目的工具，快速构建中小型API、RESTful API项目，稳定、简单、快速，使我们摆脱那些重复劳动，专注于业务代码的编写，减少加班。</p>
+<!-- more -->
+<p>特征：</p>
+<ul>
+<li>通过简单的引导方式即可生成项目</li>
+<li>最精简的pom.xml</li>
+<li>统一响应结果</li>
+<li>统一的异常处理</li>
+<li>基础方法的封装</li>
+<li>支持JPA/MyBatis两种ORM框架</li>
+<li>支持多种数据库</li>
+<li>可通过数据库反向生成实体类、DAO层、Service层、Controller层</li>
+<li>集成Swagger2生成接口文档</li>
+</ul>
+<p>传送门：</p>
+<p>项目地址：<a href="">https://github.com/wang-y/spring-boot-project-builder</a></p>
+<p>下载地址：<a href="">https://github.com/wang-y/spring-boot-project-builder/releases/latest</a></p>
+<h1 id="使用方法">使用方法</h1>
+<h2 id="使用命令模式">使用命令模式</h2>
+<ol>
+<li>下载最新的Release版本并解压</li>
+<li>进入~/spring-boot-project-builder/bin目录</li>
+<li>根据系统选择执行 create.bat/create.sh 脚本</li>
+<li>根据引导信息输入项目所需内容</li>
+</ol>
+<p><img src="https://wang-y.github.io/post-images/1562550117350.png" alt=""></p>
+<p>即可生成项目</p>
+<h2 id="在ide中导入spring-boot-project-builder">在IDE中导入spring-boot-project-builder</h2>
+<ol>
+<li>使用 git clone https://github.com/wang-y/spring-boot-project-builder.git 将项目下载到本地</li>
+<li>使用 IDE 导入项目</li>
+<li>修改 Main.java 中的 main() 方法<pre><code class="language-java">	26  //        buildProject();
+    27            build();
+</code></pre>
+将 26行代码注释取消，将27行代码注释掉即可。</li>
+<li>修改 buildProject() 方法<pre><code class="language-java">	private static void buildProject() {
+      ProjectConfig projectConfig = ProjectConfig.project(&quot;项目名称&quot;).org()
+            .name(&quot;企业/组织/个人英文名称或缩写（小写）&quot;)
+            .enableSwagger() // 启用 Swagger2
+            .setDataBaseType(DataBaseType.MYSQL)  // 数据库类型
+            .JDBCconfigure(&quot;JDBCURL&quot;, &quot;数据库用户名&quot;, &quot;数据库密码&quot;)
+            .setOrmType(OrmType.JPA)  // ORM框架
+            .setDataBaseConnectPool(DataBaseConnectPool.HIKARICP)  // 数据库连接池
+            .enableDocker();  //启用 Docker
+
+      CodeBuilder.toFilePath(&quot;项目存放路径&quot;).build(projectConfig);
+}
+</code></pre>
+</li>
+<li>执行 main() 方法，即可生成项目</li>
+</ol>
+<h1 id="反向生成业务代码">反向生成业务代码</h1>
+<ol>
+<li>将生成后的项目导入IDE中。</li>
+<li>在 <project/>/src/test/java/ 路径下找到 Generator 类</li>
+<li>在 main() 方法中执行  generate(&quot;tableName&quot;,&quot;IdType&quot;);</li>
+</ol>
+<pre><code class="language-java">public static void main(String[] args) {
+        generate(&quot;test_table&quot;,&quot;Long&quot;);  //指定 表名(test_table) , 主键类型(Long)    生成对应表的model/repository/service/web代码
+}
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[类加载过程]]></title>
         <id>https://wang-y.github.io/post/lei-jia-zai-guo-cheng</id>

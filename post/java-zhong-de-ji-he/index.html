@@ -1,0 +1,236 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Java中的集合 | 咩技术的技术Blog</title>
+<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1562592222993">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://wang-y.github.io/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://wang-y.github.io">
+  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1562592222993" alt="">
+  </a>
+  <h1 class="site-title">
+    咩技术的技术Blog
+  </h1>
+  <p class="site-description">
+    不仅不知新，并且还经常忘旧o( ╯□╰ )o
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+        <a href="https://github.com/wang-y" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Java中的集合
+            </h2>
+            <div class="post-info">
+              <time class="post-time">
+                · 2019-07-08 ·
+              </time>
+              
+            </div>
+            
+            <div class="post-content">
+              <p>先来看看Java的集合类导图。</p>
+<p><img src="https://wang-y.github.io/post-images/1562571036544.png" alt=""></p>
+<!-- more -->
+<p>首先来看Collection的末节点的类</p>
+<h1 id="linkedlist">LinkedList</h1>
+<p>LinkedList 是维护一组节点的列表，节点包括节点本身、下一个节点及上一个节点。</p>
+<p>在JDK1.6时，LinkedList只有一个头结点(header)，列表中的第一个元素的上一个节点永远指向header节点，而列表中的最后一个节点的下一个节点也永远指向header，这就构成了一个以header为开头和结尾的循环链表。</p>
+<p>在JDK1.7之后，LinkedList维护一个头结点(first)和一个尾节点(last)，列表中的第一个元素的上一个节点永远为null，而最后一个节点的下一个节点永远为null，构成了一个非循环链表。</p>
+<p>1.7对比1.6的优化：</p>
+<ul>
+<li>first / last有更清晰的链头、链尾概念，代码看起来更容易明白。</li>
+<li>first / last方式能节省new一个headerEntry。</li>
+</ul>
+<blockquote>
+<p>实例化headerEntry是为了让后面的方法更加统一，否则会多很多header的空校验</p>
+</blockquote>
+<ul>
+<li>在链头/尾进行插入/删除操作，first /last方式更加快捷。</li>
+</ul>
+<blockquote>
+<p>插入/删除操作按照位置，分为两种情况：中间 和 两头。
+在中间插入/删除，两者都是一样，先遍历找到index，然后修改链表index处两头的指针。
+在两头，对于循环链表来说，由于首尾相连，还是需要处理两头的指针。而非循环链表只需要处理一边first.previous/last.next，所以理论上非循环链表更高效。恰恰在两头(链头/链尾) 操作是最普遍的</p>
+</blockquote>
+<p>LinkedList在进行插入/移除操作时，只需要改变指针的指向（把链表断开，插入/删除元素，再把链表连起来）即可，使Linked的写入操作性能非常高。</p>
+<p>但是LinkedList在随机访问的时候效率就会很低，因为它需要遍历节点才可以找到元素。</p>
+<p>适用场景：</p>
+<ul>
+<li>写入/移除操作频繁</li>
+<li>随机访问少</li>
+<li>不需要考虑线程安全</li>
+</ul>
+<h1 id="arraylist">ArrayList</h1>
+<p>ArrayList 底层基于数组实现，在初始化时需要指定初始容量，默认容量为10，当数组容量已满时，需要进行扩容，ArrayList扩容时，按照当前容量的1.5倍生成一个新的数组，后将原数组拷贝到新数组中，最后将数组对象指针指向新数组。</p>
+<p>ArrayList是一个动态数组，实现了RandomAccess接口，支持随机访问，通过get(i)即可获得相应内存中存放的值。原因是因为ArrayList存放的内容在内存中是连续的，数组直接用[ ]访问，相当于直接操作内存地址，所以随机访问的效率较高。</p>
+<p>但是ArrayList内部空间总是有限的，每当内部容量被占满，就需要进行扩容，因此在插入/移除操作时，会带来性能上的损耗。</p>
+<p>使用场景：</p>
+<ul>
+<li>写入/移除操作少</li>
+<li>读多</li>
+<li>不需要考虑线程安全</li>
+</ul>
+<h1 id="vector">Vector</h1>
+<p>Vector 是ArrayList线程安全版本，Vector在所有方法上都加了synchronized关键字，同一时刻，只有一个线程可以进入同一个Vector对象，保证了线程的安全性，但是降低了性能。</p>
+<p>一般不使用Vector。</p>
+<p><strong>先转过头看完Map再来理解Set</strong></p>
+<h1 id="hashmap">HashMap</h1>
+<p>Map 是维护一组键值对关系的集合。
+HashMap 中使用数组+链表+红黑树的数据结构。
+HashMap在插入数据时的步骤:</p>
+<ol>
+<li>通过获取key.hashCode()</li>
+<li>做一次扰动运算  (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16))，目的是为了减少Hash碰撞</li>
+<li>检查数组是否已经初始化</li>
+<li>如果数据未初始化则先初始化数组</li>
+<li>初始化数组之后，使用扰动后的hash值与当前HashMap的数组容量减一的值做一次与运算(hash&amp; table.length-1),计算插入的键值对在数组中的索引位置。</li>
+<li>判断当前索引位置是否为空
+<ol>
+<li>如果当前位置为空，则将此键值对直接放入数组</li>
+<li>如果当前位置不为空，则继续比对此位置的旧数据中key与新key是否相等
+<ol>
+<li>如果相等，则替换，并返回旧值</li>
+<li>如果不相等，则先判断此处节点是红黑树节点还是链表节点
+<ol>
+<li>如果是红黑树节点，则插入红黑树</li>
+<li>如果是链表，遍历链表将新节点插入尾端
+<ol>
+<li>计算链表长度，如果链表长度大于8则转换为红黑树节点</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>判断数组长度是否达到 容量*加载因子 的值
+<ol>
+<li>如果是则扩容</li>
+<li>如果不是则返回结果</li>
+</ol>
+</li>
+</ol>
+<h1 id="hashtable">HashTable</h1>
+<h1 id="linkedhashmap">LinkedHashMap</h1>
+<h1 id="treemap">TreeMap</h1>
+<h1 id="hashset">HashSet</h1>
+<h1 id="linkedhashset">LinkedHashSet</h1>
+<h1 id="treeset">TreeSet</h1>
+
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://wang-y.github.io/post/java-qian-kao-bei-yu-shen-kao-bei">
+              <h3 class="post-title">
+                Java浅拷贝与深拷贝
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '1356e8abd2bb94963284',
+    clientSecret: '53c8b52fd6403011622ddc41bd7f33c136df2f78',
+    repo: 'wang-y.github.io',
+    owner: 'wang-y',
+    admin: ['wang-y'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  Written by <a href="https://github.com/wang-y" target="_blank">wymix</a> | 
+  <a class="rss" href="https://wang-y.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
