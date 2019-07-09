@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://wang-y.github.io</id>
     <title>咩技术的技术Blog</title>
-    <updated>2019-07-08T15:09:54.312Z</updated>
+    <updated>2019-07-09T01:14:06.750Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://wang-y.github.io"/>
     <link rel="self" href="https://wang-y.github.io/atom.xml"/>
@@ -10,6 +10,18 @@
     <logo>https://wang-y.github.io/images/avatar.png</logo>
     <icon>https://wang-y.github.io/favicon.ico</icon>
     <rights>All rights reserved 2019, 咩技术的技术Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[synchronized关键字与锁]]></title>
+        <id>https://wang-y.github.io/post/synchronized-guan-jian-zi-yu-suo</id>
+        <link href="https://wang-y.github.io/post/synchronized-guan-jian-zi-yu-suo">
+        </link>
+        <updated>2019-07-08T15:04:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>占位</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>占位</p>
+<!-- more -->
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Java中的集合]]></title>
         <id>https://wang-y.github.io/post/java-zhong-de-ji-he</id>
