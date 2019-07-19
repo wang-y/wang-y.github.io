@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>JVM内存模型 | 咩技术的技术Blog</title>
-<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1562657974823">
+<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1563514131375">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://wang-y.github.io/styles/main.css">
@@ -20,7 +20,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://wang-y.github.io">
-  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1562657974823" alt="">
+  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1563514131375" alt="">
   </a>
   <h1 class="site-title">
     咩技术的技术Blog
@@ -141,7 +141,7 @@
 <li>对于引用类型的静态变量如果用new关键字为引用类型的静态变量分配对象（如: static Person person = new Person();）,那么对象的引用person 会存储在方法区中，并且该对象在堆中的地址也会存储在方法区中（注意此时静态变量只存储了对象的堆地址，而对象本身仍在堆内存中）</li>
 </ul>
 <p>Method Area也经常被称作Non-heap(非堆)，但是在Hotspot中，其定义了Perm Gen(持久代)(仅在Hotspot中有持久代这个概念)，以此替代Method Area，也就是说在Hotspot中在物理上Method Area存在于Heap中的Perm Gen中，但是从逻辑上来讲，Method Area与Heap的概念还是互相独立的。</p>
-<p>在Java7之前，字符串常量池和运行时常量池都存放在Method Area中。
+<p>在Java7之前，字符串常量池和运行时常量池都存放在Method Area中。<br>
 到Java7时，字符串常量池被移到了Heap中。</p>
 <p>Method Area也需要进行垃圾收集。</p>
 <h1 id="meta-space">Meta Space</h1>

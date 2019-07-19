@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>线程、线程状态及线程池 | 咩技术的技术Blog</title>
-<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1562657974823">
+<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1563514131375">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://wang-y.github.io/styles/main.css">
@@ -20,7 +20,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://wang-y.github.io">
-  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1562657974823" alt="">
+  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1563514131375" alt="">
   </a>
   <h1 class="site-title">
     咩技术的技术Blog
@@ -82,7 +82,7 @@
             </h2>
             <div class="post-info">
               <time class="post-time">
-                · 2019-07-08 ·
+                · 2019-07-10 ·
               </time>
               
                 <a href="https://wang-y.github.io/tag/vpwbuUQ85" class="post-tag">
@@ -92,8 +92,42 @@
             </div>
             
             <div class="post-content">
-              <p>占位</p>
+              <p>我们都知道在一个系统下面有很多进程，进程与进程之间可以并行的执行任务，那么线程和进程相同，它是挂在进程下面的，好比一个系统会有很多进程，一个进程里面也可以有很多线程。</p>
 <!-- more -->
+<h1 id="thread">Thread</h1>
+<p>Thread 是用来启动线程的类。</p>
+<h2 id="构造器">构造器</h2>
+<pre><code class="language-java"> public Thread(){...}
+ public Thread(Runnable target){...}
+ public Thread(ThreadGroup group, Runnable target){...}
+ public Thread(String name){...}
+ public Thread(ThreadGroup group, String name){...}
+ public Thread(Runnable target, String name){...}
+ public Thread(ThreadGroup group, Runnable target, String name){...}
+ public Thread(ThreadGroup group, Runnable target, String name, long stackSize){...}
+</code></pre>
+<h2 id="线程状态">线程状态</h2>
+<h3 id="new">NEW</h3>
+<h3 id="runnable">RUNNABLE</h3>
+<h3 id="blocked">BLOCKED</h3>
+<h3 id="waiting">WAITING</h3>
+<h3 id="timed_waiting">TIMED_WAITING</h3>
+<h3 id="terminated">TERMINATED</h3>
+<h2 id="常用方法">常用方法</h2>
+<h3 id="成员方法">成员方法</h3>
+<h4 id="join">join()</h4>
+<h4 id="start">start()</h4>
+<h4 id="interrupt">interrupt()</h4>
+<h4 id="isinterrupted">isInterrupted()</h4>
+<h4 id="isalive">isAlive()</h4>
+<h4 id="setpriorityint-newpriority">setPriority(int newPriority)</h4>
+<h4 id="setdaemonboolean-on">setDaemon(boolean on)</h4>
+<h3 id="静态方法">静态方法</h3>
+<h4 id="sleep">sleep()</h4>
+<h4 id="interrupted">interrupted()</h4>
+<h4 id="currentthread">currentThread()</h4>
+<h4 id="activecount">activeCount()</h4>
+<h4 id="yield">yield()</h4>
 
             </div>
           </article>

@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>类加载过程 | 咩技术的技术Blog</title>
-<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1562657974823">
+<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1563514131375">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://wang-y.github.io/styles/main.css">
@@ -20,7 +20,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://wang-y.github.io">
-  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1562657974823" alt="">
+  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1563514131375" alt="">
   </a>
   <h1 class="site-title">
     咩技术的技术Blog
@@ -98,8 +98,8 @@
 <p>类的加载过程一共分为7个阶段，如下图：</p>
 <p><img src="https://wang-y.github.io/post-images/1562507092196.png" alt=""></p>
 <h1 id="加载">加载</h1>
-<p>首先，虚拟机需要通过类的全限定名才能获取到定义此类的二进制字节流。
-然后，将这个字节流所代表的静态存储结构转换为方法区的运行时数据结构。
+<p>首先，虚拟机需要通过类的全限定名才能获取到定义此类的二进制字节流。<br>
+然后，将这个字节流所代表的静态存储结构转换为方法区的运行时数据结构。<br>
 最后，在内存中生成一个代表该类的java.lang.Class对象，作为这个类在方法区的各种数据的访问入口。</p>
 <p>虚拟机规范其实相对比较宽泛，并没有强制规范“二进制字节流一定要从.class文件中读取”，所以，也可使用很多其他的方式，诸如 压缩包内读取、网络上获取、其他文件生成、数据库中读取、运行时计算生成等。</p>
 <h1 id="验证">验证</h1>
@@ -136,7 +136,7 @@
 <li>虚拟机启动时，用户需要指定一个要执行的主类时(即main()方法的所在类)，虚拟机会先初始化这个类。</li>
 <li>使用JDK 1.7的动态语言支持时</li>
 </ol>
-<p>到了这一步，才真正开始执行类中定义的Java程序代码。
+<p>到了这一步，才真正开始执行类中定义的Java程序代码。<br>
 通俗来说就是执行类构造器&lt;clinit&gt;()方法的过程。</p>
 <h1 id="双亲委派模型">双亲委派模型</h1>
 <p>对于Java虚拟机的角度来讲，只存在两种不同的类加载器:</p>
@@ -153,7 +153,7 @@
 <p>此三者类加载器互相配合进行加载，具有层级关系</p>
 <p><img src="https://wang-y.github.io/post-images/1562511382768.png" alt=""></p>
 <p>最后，程序员们可以在应用类加载器之下自定义类加载器。</p>
-<p>双亲委派模型工作过程：
+<p>双亲委派模型工作过程：<br>
 类加载器收到了类加载委托请求，它首先不会去尝试自己加载该类，而是委派给父类加载器去加载，如果父类加载器在其搜索范围内没有找到所需的类而无法完成这个加载请求时，子类加载器才会尝试由自己去加载。</p>
 
             </div>

@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>synchronized关键字与锁 | 咩技术的技术Blog</title>
-<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1562657974823">
+<link rel="shortcut icon" href="https://wang-y.github.io/favicon.ico?v=1563514131375">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://wang-y.github.io/styles/main.css">
@@ -20,7 +20,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://wang-y.github.io">
-  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1562657974823" alt="">
+  <img class="avatar" src="https://wang-y.github.io/images/avatar.png?v=1563514131375" alt="">
   </a>
   <h1 class="site-title">
     咩技术的技术Blog
@@ -152,10 +152,10 @@ ObjectMonitor() {
 <p>其中 _WaitSet 用来存放每个等待锁的线程对象。</p>
 <p>_owner指向持有ObjectMonitor对象的线程。</p>
 <p>当多线程同时访问同一段同步代码时，首先会存放到 _EntryList 队列中，当其中一个线程获取到对象monitor时，将 _owner 设置为当前线程，并且将 _count 数值加一，当 _owner 线程释放monitor时，将 _count 数值减一，这意味着当 _owner线程每获取一次对象monitor，_count都要加一，每释放一次对象，_count都要减一，最终当方法执行完毕或者调用wait()方法时，_owner变量就会被置为null，同时_count减1，并且该线程进入 WaitSet集合中，等待下一次被唤醒。</p>
-<p>当我们在方法上修饰synchronized时，编译器编译代码生成的字节码指令如下：
+<p>当我们在方法上修饰synchronized时，编译器编译代码生成的字节码指令如下：<br>
 <img src="https://wang-y.github.io/post-images/1562653908545.jpg" alt=""></p>
 <p>字节码中有一个ACC_SYNCHRONIZED标识，Java通过这个标识即可知道这是一个需要进行同步的方法，线程在进入方法时，首先回去尝试获取对象monitor(ObjectMonitor.hpp)，如果获取成功，monitor会将_owner指向当前线程，并将_count加一，当方法执行完成后，会将_count减一，并将_owner置为null。</p>
-<p>当我们使用synchronized代码块时，编译器编译代码生成的字节码指令如下：
+<p>当我们使用synchronized代码块时，编译器编译代码生成的字节码指令如下：<br>
 <img src="https://wang-y.github.io/post-images/1562656464797.png" alt=""></p>
 <p>字节码中 第 3 行有一个 monitorenter ，第 27 、33 行各有一个monitorexit，但是27、33行之间是一个分支代码，所有 进入monitorenter之后，仅会执行一个monitorexit，一进一出之间就代表了并将_count加一减一的过程。</p>
 <p>获取同步锁的几种方式：</p>
